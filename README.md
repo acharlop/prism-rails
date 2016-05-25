@@ -45,26 +45,27 @@ Add the following to your `app/assets/javascripts/application.js`:
 ```
 
 Or use one of the other themes see [Prism](http://prismjs.com) and [prism-themes](https://github.com/PrismJS/prism-themes) for examples
-	* atom-dark
-	* base16-ateliersulphurpool.light
-	* cb
-	* coy
-	* dark
-	* duotone-dark
-	* duotone-earth
-	* duotone-forest
-	* duotone-light
-	* duotone-sea
-	* duotone-space
-	* funky
-	* ghcolors
-	* hopscotch
-	* okaidia
-	* pojoaque
-	* solarizedlight
-	* tomorrow
-	* twilight
-	* xonokai
+
+* atom-dark
+* base16-ateliersulphurpool.light
+* cb
+* coy
+* dark
+* duotone-dark
+* duotone-earth
+* duotone-forest
+* duotone-light
+* duotone-sea
+* duotone-space
+* funky
+* ghcolors
+* hopscotch
+* okaidia
+* pojoaque
+* solarizedlight
+* tomorrow
+* twilight
+* xonokai
 
 ## Plugins
 
