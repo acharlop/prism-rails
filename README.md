@@ -1,8 +1,8 @@
-# Prism::Rails
+# prism-rails
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/prism/rails`. To experiment with that code, run `bin/console` for an interactive prompt.
+prism-rails wraps the Prism.js library in a rails engine for simple use with the asset pipeline
 
-TODO: Delete this and the text above, and describe your gem
+Prism is a lightweight, robust, elegant syntax highlighting library.
 
 ## Installation
 
