@@ -22,7 +22,74 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+### Install prism-rails gem
+
+add `prism-rails` to your Gemfile and run `bundle install`:
+
+	`gem "prism-rails"`
+
+### Include prism-rails javascript assets
+
+Add the following to your `app/assets/javascripts/application.js`:
+
+	`//= require prism`
+
+### include prism-rails stylesheet assets
+
+	`*= require prism`
+
+Or use one of the other themes see [Prism](http://prismjs.com) and [prism-themes](https://github.com/PrismJS/prism-themes) for examples
+	* atom-dark
+	* base16-ateliersulphurpool.light
+	* cb
+	* coy
+	* dark
+	* duotone-dark
+	* duotone-earth
+	* duotone-forest
+	* duotone-light
+	* duotone-sea
+	* duotone-space
+	* funky
+	* ghcolors
+	* hopscotch
+	* okaidia
+	* pojoaque
+	* solarizedlight
+	* tomorrow
+	* twilight
+	* xonokai
+
+## Plugins
+
+See [Prism](http://prismjs.com/#plugins) for more details about the plugins
+
+* autolinker
+* command-line
+* ie8
+* line-highlight
+* line-numbers
+* previewer-angle
+* previewer-base
+* previewer-color
+* previewer-easing
+* previewer-gradient
+* previewer-time
+* show-invisibles
+* show-language
+* unescaped-markup
+* wpd
+
+### Include plugin javascript assets
+
+Add the following to your `app/assets/javascripts/application.js`:
+
+	`//= require prism-[plugin-name]`
+
+### include prism-rails stylesheet assets
+
+	`*= require prism-[plugin-name]`
+
 
 ## Development
 
