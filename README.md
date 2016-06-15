@@ -1,4 +1,4 @@
-# prism-rails
+# prism-rails 1.5.1
 
 prism-rails wraps the Prism.js library in a rails engine for simple use with the asset pipeline
 
@@ -103,8 +103,7 @@ Add the following to your `app/assets/javascripts/application.js`:
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/acharlop/prism-rails. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
-
+Bug reports and pull requests are welcome on GitHub at https://github.com/acharlop/prism-rails.
 
 ## License
 
