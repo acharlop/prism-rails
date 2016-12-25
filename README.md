@@ -1,6 +1,6 @@
 # prism-rails 1.5.1
 
-prism-rails wraps the Prism.js library in a rails engine for simple use with the asset pipeline
+prism-rails wraps the [Prism.js](https://github.com/PrismJS/prism) library in a rails engine for simple use with the asset pipeline
 
 Prism is a lightweight, robust, elegant syntax highlighting library.
 
@@ -108,4 +108,3 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/acharl
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-

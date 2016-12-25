@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.homepage      = 'https://github.com/acharlop/prism-rails'
   s.license       = "MIT"
 
-  s.add_dependency "rails", "~>4.0.0"
+  s.add_dependency "rails", ">= 4.0.0"
 
   s.files         = Dir["{lib,vendor}/**/*"]
   s.require_paths = ["lib"]
