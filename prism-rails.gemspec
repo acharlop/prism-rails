@@ -15,8 +15,8 @@ Gem::Specification.new do |s|
     This gem allows for its simple use with the rails asset pipeline
   EOF
 
-  s.add_dependency "railties", "~> 4.0.0"
-  s.add_development_dependency "rails", "~> 4.0.0"
+  s.add_dependency "railties", "~> 5.0.1"
+  s.add_development_dependency "rails", "~> 5.0.1"
   s.add_development_dependency "rspec", "~> 3.5"
 
   s.files         = Dir["{lib,vendor}/**/*"] + ["CHANGELOG.md", "README.md", "LICENSE"]
