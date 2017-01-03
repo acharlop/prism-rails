@@ -1,3 +1,8 @@
+//! prism-rails
+//! version : 1.6.0
+//! authors : Avi Charlop, Prismjs.com contributors
+//! license : MIT
+
 //= require ./prism/prism-core
 //= require ./prism/prism-clike
 //= require ./prism/prism-javascript

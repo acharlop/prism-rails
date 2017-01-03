@@ -1,8 +1,6 @@
 require "prism-rails/version"
 
-module Prism
-  module Rails
-  	class Engine < ::Rails::Engine
-  	end
-  end
+module PrismRails
+	class Engine < ::Rails::Engine
+	end
 end
