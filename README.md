@@ -4,47 +4,27 @@ prism-rails wraps the [Prism.js](https://github.com/PrismJS/prism) library in a 
 
 Prism is a lightweight, robust, elegant syntax highlighting library.
 
-## Installation
+## Usage
 
-Add this line to your application's Gemfile:
+Add the following to your application's Gemfile and run `bundle install`:
 
 ```ruby
 gem 'prism-rails'
 ```
 
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install prism-rails
-
-## Usage
-
-### Install prism-rails gem
-
-add `prism-rails` to your Gemfile and run `bundle install`:
+Add the following to your Javascript manifest file `application.js`:
 
 ```ruby
-gem "prism-rails"
+//= require prism-rails
 ```
 
-### Include prism-rails javascript assets
-
-Add the following to your `app/assets/javascripts/application.js`:
-
-```ruby
-//= require prism
-```
-
-### include prism-rails stylesheet assets
+Add the css for the default styling `application.css`:
 
 ```ruby
 *= require prism
 ```
 
-Or use one of the other themes see [Prism](http://prismjs.com) and [prism-themes](https://github.com/PrismJS/prism-themes) for examples
+Or use one of the other themes below. See [Prism](http://prismjs.com) and [prism-themes](https://github.com/PrismJS/prism-themes) for examples.
 
 * atom-dark
 * base16-ateliersulphurpool.light
@@ -87,19 +67,21 @@ See [Prism](http://prismjs.com/#plugins) for more details about the plugins
 * unescaped-markup
 * wpd
 
-### Include plugin javascript assets
-
-Add the following to your `app/assets/javascripts/application.js`:
+Add the following to your Javascript manifest file `application.js`:
 
 ```ruby
-//= require prism-[plugin-name]
+//= require prism-plugin/prism-[plugin-name]
 ```
 
-### include prism-rails stylesheet assets
+Add the following to your `application.scss`:
 
 ```ruby
-*= require prism-[plugin-name]
+*= require prism-plugin/prism-[plugin-name]
 ```
+
+## Versioning
+prism-rails 1.6.0 == Prism.js 1.6.0
+Every attempt is made to mirror the currently shipping Prism.js version number wherever possible. The major, minor, and patch version numbers will always represent the Prism.js version. Should a gem bug be discovered, a 4th version identifier will be added and incremented.
 
 ## Contributing
 

@@ -5,6 +5,12 @@
 /coverage/
 /doc/
 /pkg/
+
 /spec/reports/
 /tmp/
+.rake_tasks~
 *.gem
+Gemfile.lock
+.idea
+.DS_Store
+pkg/
