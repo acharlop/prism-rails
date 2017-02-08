@@ -15,7 +15,7 @@ gem 'prism-rails'
 Add the following to your Javascript manifest file `application.js`:
 
 ```ruby
-//= require prism-rails
+//= require prism
 ```
 
 Add the css for the default styling `application.css`:
@@ -85,7 +85,10 @@ Every attempt is made to mirror the currently shipping Prism.js version number w
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/acharlop/prism-rails.
+Bug reports and pull requests are welcome on [GitHub](https://github.com/acharlop/prism-rails).
+
+### Contributors
+[@simmerz](https://github.com/simmerz)
 
 ## License
 
