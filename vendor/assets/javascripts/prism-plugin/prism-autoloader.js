@@ -4,14 +4,27 @@
 	}
 
 	// The dependencies map is built automatically with gulp
-	var lang_dependencies = /*languages_placeholder[*/{"javascript":"clike","actionscript":"javascript","aspnet":"markup","bison":"c","c":"clike","csharp":"clike","cpp":"c","coffeescript":"javascript","crystal":"ruby","css-extras":"css","d":"clike","dart":"clike","fsharp":"clike","glsl":"clike","go":"clike","groovy":"clike","haml":"ruby","handlebars":"markup","haxe":"clike","jade":"javascript","java":"clike","jolie":"clike","kotlin":"clike","less":"css","markdown":"markup","nginx":"clike","objectivec":"c","parser":"markup","php":"clike","php-extras":"php","processing":"clike","protobuf":"clike","qore":"clike","jsx":["markup","javascript"],"reason":"clike","ruby":"clike","sass":"css","scss":"css","scala":"java","smarty":"markup","swift":"clike","textile":"markup","twig":"markup","typescript":"javascript","wiki":"markup"}/*]*/;
+	var lang_dependencies = /*dependencies_placeholder[*/{"javascript":"clike","actionscript":"javascript","arduino":"cpp","aspnet":["markup","csharp"],"bison":"c","c":"clike","csharp":"clike","cpp":"c","coffeescript":"javascript","crystal":"ruby","css-extras":"css","d":"clike","dart":"clike","django":"markup-templating","ejs":["javascript","markup-templating"],"erb":["ruby","markup-templating"],"fsharp":"clike","flow":"javascript","glsl":"clike","gml":"clike","go":"clike","groovy":"clike","haml":"ruby","handlebars":"markup-templating","haxe":"clike","java":"clike","javadoc":["markup","java","javadoclike"],"jolie":"clike","jsdoc":["javascript","javadoclike"],"js-extras":"javascript","jsonp":"json","json5":"json","kotlin":"clike","less":"css","markdown":"markup","markup-templating":"markup","n4js":"javascript","nginx":"clike","objectivec":"c","opencl":"cpp","parser":"markup","php":["clike","markup-templating"],"phpdoc":["php","javadoclike"],"php-extras":"php","plsql":"sql","processing":"clike","protobuf":"clike","pug":["markup","javascript"],"qore":"clike","jsx":["markup","javascript"],"tsx":["jsx","typescript"],"reason":"clike","ruby":"clike","sass":"css","scss":"css","scala":"java","smarty":"markup-templating","soy":"markup-templating","swift":"clike","tap":"yaml","textile":"markup","tt2":["clike","markup-templating"],"twig":"markup","typescript":"javascript","t4-cs":["t4-templating","csharp"],"t4-vb":["t4-templating","visual-basic"],"vala":"clike","vbnet":"basic","velocity":"markup","wiki":"markup","xeora":"markup","xquery":"markup"}/*]*/;
+
+	var lang_aliases = /*aliases_placeholder[*/{"html":"markup","xml":"markup","svg":"markup","mathml":"markup","js":"javascript","adoc":"asciidoc","shell":"bash","rbnf":"bnf","dotnet":"csharp","coffee":"coffeescript","jinja2":"django","dockerfile":"docker","gamemakerlanguage":"gml","hs":"haskell","emacs":"lisp","elisp":"lisp","emacs-lisp":"lisp","md":"markdown","n4jsd":"n4js","objectpascal":"pascal","py":"python","rb":"ruby","ts":"typescript","t4":"t4-cs","vb":"visual-basic","xeoracube":"xeora","yml":"yaml"}/*]*/;
 
 	var lang_data = {};
 
 	var ignored_language = 'none';
 
+	var script = document.getElementsByTagName('script');
+	script = script[script.length - 1];
+	var languages_path = 'components/';
+	if(script.hasAttribute('data-autoloader-path')) {
+		var path = script.getAttribute('data-autoloader-path').trim();
+		if(path.length > 0 && !/^[a-z]+:\/\//i.test(script.src)) {
+			languages_path = path.replace(/\/?$/, '/');
+		}
+	} else if (/[\w-]+\.js$/.test(script.src)) {
+		languages_path = script.src.replace(/[\w-]+\.js$/, 'components/');
+	}
 	var config = Prism.plugins.autoloader = {
-		languages_path: 'components/',
+		languages_path: languages_path,
 		use_minified: true
 	};
 
@@ -21,7 +34,7 @@
 	 * @param {function=} success
 	 * @param {function=} error
 	 */
-	var script = function (src, success, error) {
+	var addScript = function (src, success, error) {
 		var s = document.createElement('script');
 		s.src = src;
 		s.async = true;
@@ -54,6 +67,10 @@
 	 * @param {HTMLElement} elt
 	 */
 	var registerElement = function (lang, elt) {
+		if (lang in lang_aliases) {
+			lang = lang_aliases[lang];
+		}
+
 		var data = lang_data[lang];
 		if (!data) {
 			data = lang_data[lang] = {};
@@ -112,14 +129,12 @@
 	 * @param {function=} error
 	 */
 	var loadLanguage = function (lang, success, error) {
-		var load = function () {
-			var force = false;
-			// Do we want to force reload the grammar?
-			if (lang.indexOf('!') >= 0) {
-				force = true;
-				lang = lang.replace('!', '');
-			}
+		var force = lang.indexOf('!') >= 0;
 
+		lang = lang.replace('!', '');
+		lang = lang_aliases[lang] || lang;
+
+		var load = function () {
 			var data = lang_data[lang];
 			if (!data) {
 				data = lang_data[lang] = {};
@@ -144,7 +159,7 @@
 			} else if (force || !data.loading) {
 				data.loading = true;
 				var src = getLanguagePath(lang);
-				script(src, function () {
+				addScript(src, function () {
 					data.loading = false;
 					languageSuccess(lang);
 
@@ -155,6 +170,7 @@
 				});
 			}
 		};
+
 		var dependencies = lang_dependencies[lang];
 		if(dependencies && dependencies.length) {
 			loadLanguages(dependencies, load);

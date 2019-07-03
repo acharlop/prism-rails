@@ -3,7 +3,11 @@
 		return;
 	}
 
-	self.Prism.fileHighlight = function() {
+	/**
+	 * @param {Element} [container=document]
+	 */
+	self.Prism.fileHighlight = function(container) {
+		container = container || document;
 
 		var Extensions = {
 			'js': 'javascript',
@@ -17,61 +21,85 @@
 			'tex': 'latex'
 		};
 
-		if(Array.prototype.forEach) { // Check to prevent error in IE8
-			Array.prototype.slice.call(document.querySelectorAll('pre[data-src]')).forEach(function (pre) {
-				var src = pre.getAttribute('data-src');
+		Array.prototype.slice.call(container.querySelectorAll('pre[data-src]')).forEach(function (pre) {
+			// ignore if already loaded
+			if (pre.hasAttribute('data-src-loaded')) {
+				return;
+			}
 
-				var language, parent = pre;
-				var lang = /\blang(?:uage)?-(?!\*)(\w+)\b/i;
-				while (parent && !lang.test(parent.className)) {
-					parent = parent.parentNode;
-				}
+			// load current
+			var src = pre.getAttribute('data-src');
 
-				if (parent) {
-					language = (pre.className.match(lang) || [, ''])[1];
-				}
+			var language, parent = pre;
+			var lang = /\blang(?:uage)?-([\w-]+)\b/i;
+			while (parent && !lang.test(parent.className)) {
+				parent = parent.parentNode;
+			}
 
-				if (!language) {
-					var extension = (src.match(/\.(\w+)$/) || [, ''])[1];
-					language = Extensions[extension] || extension;
-				}
+			if (parent) {
+				language = (pre.className.match(lang) || [, ''])[1];
+			}
 
-				var code = document.createElement('code');
-				code.className = 'language-' + language;
+			if (!language) {
+				var extension = (src.match(/\.(\w+)$/) || [, ''])[1];
+				language = Extensions[extension] || extension;
+			}
 
-				pre.textContent = '';
+			var code = document.createElement('code');
+			code.className = 'language-' + language;
 
-				code.textContent = 'Loading…';
+			pre.textContent = '';
 
-				pre.appendChild(code);
+			code.textContent = 'Loading…';
 
-				var xhr = new XMLHttpRequest();
+			pre.appendChild(code);
 
-				xhr.open('GET', src, true);
+			var xhr = new XMLHttpRequest();
 
-				xhr.onreadystatechange = function () {
-					if (xhr.readyState == 4) {
+			xhr.open('GET', src, true);
 
-						if (xhr.status < 400 && xhr.responseText) {
-							code.textContent = xhr.responseText;
+			xhr.onreadystatechange = function () {
+				if (xhr.readyState == 4) {
 
-							Prism.highlightElement(code);
-						}
-						else if (xhr.status >= 400) {
-							code.textContent = '✖ Error ' + xhr.status + ' while fetching file: ' + xhr.statusText;
-						}
-						else {
-							code.textContent = '✖ Error: File does not exist or is empty';
-						}
+					if (xhr.status < 400 && xhr.responseText) {
+						code.textContent = xhr.responseText;
+
+						Prism.highlightElement(code);
+						// mark as loaded
+						pre.setAttribute('data-src-loaded', '');
 					}
-				};
+					else if (xhr.status >= 400) {
+						code.textContent = '✖ Error ' + xhr.status + ' while fetching file: ' + xhr.statusText;
+					}
+					else {
+						code.textContent = '✖ Error: File does not exist or is empty';
+					}
+				}
+			};
 
-				xhr.send(null);
+			xhr.send(null);
+		});
+
+		if (Prism.plugins.toolbar) {
+			Prism.plugins.toolbar.registerButton('download-file', function (env) {
+				var pre = env.element.parentNode;
+				if (!pre || !/pre/i.test(pre.nodeName) || !pre.hasAttribute('data-src') || !pre.hasAttribute('data-download-link')) {
+					return;
+				}
+				var src = pre.getAttribute('data-src');
+				var a = document.createElement('a');
+				a.textContent = pre.getAttribute('data-download-link-label') || 'Download';
+				a.setAttribute('download', '');
+				a.href = src;
+				return a;
 			});
 		}
 
 	};
 
-	document.addEventListener('DOMContentLoaded', self.Prism.fileHighlight);
+	document.addEventListener('DOMContentLoaded', function () {
+		// execute inside handler, for dropping Event as argument
+		self.Prism.fileHighlight();
+	});
 
 })();

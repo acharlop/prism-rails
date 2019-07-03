@@ -1,9 +1,5 @@
 (function() {
 
-if (typeof self === 'undefined' || !self.Prism || !self.document) {
-	return;
-}
-
 var assign = Object.assign || function (obj1, obj2) {
 	for (var name in obj2) {
 		if (obj2.hasOwnProperty(name))
@@ -64,7 +60,7 @@ NormalizeWhitespace.prototype = {
 	},
 	spacesToTabs: function (input, spaces) {
 		spaces = spaces|0 || 4;
-		return input.replace(new RegExp(' {' + spaces + '}', 'g'), '\t');
+		return input.replace(RegExp(' {' + spaces + '}', 'g'), '\t');
 	},
 	removeTrailing: function (input) {
 		return input.replace(/\s*?$/gm, '');
@@ -84,7 +80,7 @@ NormalizeWhitespace.prototype = {
 		if (!indents[0].length)
 			return input;
 
-		return input.replace(new RegExp('^' + indents[0], 'gm'), '');
+		return input.replace(RegExp('^' + indents[0], 'gm'), '');
 	},
 	indent: function (input, tabs) {
 		return input.replace(/^[^\S\n\r]*(?=\S)/gm, new Array(++tabs).join('\t') + '$&');
@@ -114,6 +110,16 @@ NormalizeWhitespace.prototype = {
 	}
 };
 
+// Support node modules
+if (typeof module !== 'undefined' && module.exports) {
+	module.exports = NormalizeWhitespace;
+}
+
+// Exit if prism is not loaded
+if (typeof Prism === 'undefined') {
+	return;
+}
+
 Prism.plugins.NormalizeWhitespace = new NormalizeWhitespace({
 	'remove-trailing': true,
 	'remove-indent': true,
@@ -127,18 +133,30 @@ Prism.plugins.NormalizeWhitespace = new NormalizeWhitespace({
 });
 
 Prism.hooks.add('before-sanity-check', function (env) {
+	var Normalizer = Prism.plugins.NormalizeWhitespace;
+
+	// Check settings
+	if (env.settings && env.settings['whitespace-normalization'] === false) {
+		return;
+	}
+
+	// Simple mode if there is no env.element
+	if ((!env.element || !env.element.parentNode) && env.code) {
+		env.code = Normalizer.normalize(env.code, env.settings);
+		return;
+	}
+
+	// Normal mode
 	var pre = env.element.parentNode;
-	var clsReg = /\bno-whitespace-normalization\b/;
+	var clsReg = /(?:^|\s)no-whitespace-normalization(?:\s|$)/;
 	if (!env.code || !pre || pre.nodeName.toLowerCase() !== 'pre' ||
-			(env.settings && env.settings['whitespace-normalization'] === false) ||
 			clsReg.test(pre.className) || clsReg.test(env.element.className))
 		return;
 
 	var children = pre.childNodes,
 	    before = '',
 	    after = '',
-	    codeFound = false,
-	    Normalizer = Prism.plugins.NormalizeWhitespace;
+	    codeFound = false;
 
 	// Move surrounding whitespace from the <pre> tag into the <code> tag
 	for (var i = 0; i < children.length; ++i) {

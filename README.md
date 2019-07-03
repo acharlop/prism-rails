@@ -1,4 +1,4 @@
-# prism-rails 1.5.1
+# prism-rails 1.16.0
 
 prism-rails wraps the [Prism.js](https://github.com/PrismJS/prism) library in a rails engine for simple use with the asset pipeline
 

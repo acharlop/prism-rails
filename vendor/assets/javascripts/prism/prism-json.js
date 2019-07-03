@@ -1,11 +1,19 @@
 Prism.languages.json = {
-    'property': /"(?:\\.|[^|"])*"(?=\s*:)/ig,
-    'string': /"(?!:)(?:\\.|[^|"])*"(?!:)/g,
-    'number': /\b-?(0x[\dA-Fa-f]+|\d*\.?\d+([Ee][+-]?\d+)?)\b/g,
-    'punctuation': /[{}[\]);,]/g,
-    'operator': /:/g,
-    'boolean': /\b(true|false)\b/gi,
-    'null': /\bnull\b/gi
+	'comment': /\/\/.*|\/\*[\s\S]*?(?:\*\/|$)/,
+	'property': {
+		pattern: /"(?:\\.|[^\\"\r\n])*"(?=\s*:)/,
+		greedy: true
+	},
+	'string': {
+		pattern: /"(?:\\.|[^\\"\r\n])*"(?!\s*:)/,
+		greedy: true
+	},
+	'number': /-?\d+\.?\d*(e[+-]?\d+)?/i,
+	'punctuation': /[{}[\],]/,
+	'operator': /:/,
+	'boolean': /\b(?:true|false)\b/,
+	'null': {
+		pattern: /\bnull\b/,
+		alias: 'keyword'
+	}
 };
-
-Prism.languages.jsonp = Prism.languages.json;

@@ -1,7 +1,7 @@
-(function(Prism) {
+(function (Prism) {
 	// We don't allow for pipes inside parentheses
 	// to not break table pattern |(. foo |). bar |
-	var modifierRegex = '(?:\\([^|)]+\\)|\\[[^\\]]+\\]|\\{[^}]+\\})+';
+	var modifierRegex = /(?:\([^|)]+\)|\[[^\]]+\]|\{[^}]+\})+/.source;
 	var modifierTokens = {
 		'css': {
 			pattern: /\{[^}]+\}/,
@@ -24,7 +24,7 @@
 	};
 
 
-	Prism.languages.textile = Prism.languages.extend('markup', {
+	var textile = Prism.languages.textile = Prism.languages.extend('markup', {
 		'phrase': {
 			pattern: /(^|\r|\n)\S[\s\S]*?(?=$|\r?\n\r?\n|\r\r)/,
 			lookbehind: true,
@@ -37,7 +37,7 @@
 						'modifier': {
 							pattern: RegExp('(^[a-z]\\w*)(?:' + modifierRegex + '|[<>=()])+(?=\\.)'),
 							lookbehind: true,
-							inside: Prism.util.clone(modifierTokens)
+							inside: modifierTokens
 						},
 						'tag': /^[a-z]\w*/,
 						'punctuation': /\.$/
@@ -52,7 +52,7 @@
 						'modifier': {
 							pattern: RegExp('(^[*#]+)' + modifierRegex),
 							lookbehind: true,
-							inside: Prism.util.clone(modifierTokens)
+							inside: modifierTokens
 						},
 						'punctuation': /^[*#]+/
 					}
@@ -69,7 +69,7 @@
 							// preceded by a pipe and a line feed
 							pattern: RegExp('(^|\\|(?:\\r?\\n|\\r)?)(?:' + modifierRegex + '|[<>=()^~_]|[\\\\/]\\d+)+(?=\\.)'),
 							lookbehind: true,
-							inside: Prism.util.clone(modifierTokens)
+							inside: modifierTokens
 						},
 						'punctuation': /\||^\./
 					}
@@ -82,13 +82,13 @@
 
 						// *bold*, **bold**
 						'bold': {
-							pattern: RegExp('((^\\*\\*?)(?:' + modifierRegex + ')?).+?(?=\\2)'),
+							pattern: RegExp('(^(\\*\\*?)(?:' + modifierRegex + ')?).+?(?=\\2)'),
 							lookbehind: true
 						},
 
 						// _italic_, __italic__
 						'italic': {
-							pattern: RegExp('((^__?)(?:' + modifierRegex + ')?).+?(?=\\2)'),
+							pattern: RegExp('(^(__?)(?:' + modifierRegex + ')?).+?(?=\\2)'),
 							lookbehind: true
 						},
 
@@ -127,7 +127,7 @@
 						'modifier': {
 							pattern: RegExp('(^\\*\\*|__|\\?\\?|[*_%@+\\-^~])' + modifierRegex),
 							lookbehind: true,
-							inside: Prism.util.clone(modifierTokens)
+							inside: modifierTokens
 						},
 						'punctuation': /[*_%?@+\-^~]+/
 					}
@@ -161,7 +161,7 @@
 						'modifier': {
 							pattern: RegExp('(^")' + modifierRegex),
 							lookbehind: true,
-							inside: Prism.util.clone(modifierTokens)
+							inside: modifierTokens
 						},
 						'url': {
 							pattern: /(:).+/,
@@ -184,7 +184,7 @@
 						'modifier': {
 							pattern: RegExp('(^!)(?:' + modifierRegex + '|[<>=()])+'),
 							lookbehind: true,
-							inside: Prism.util.clone(modifierTokens)
+							inside: modifierTokens
 						},
 						'url': {
 							pattern: /(:).+/,
@@ -217,41 +217,44 @@
 
 				// Prism(C)
 				'mark': {
-					pattern: /\b\((TM|R|C)\)/,
+					pattern: /\b\((?:TM|R|C)\)/,
 					alias: 'comment',
 					inside: {
-						'punctuation':/[()]/
+						'punctuation': /[()]/
 					}
 				}
 			}
 		}
 	});
 
+	var phraseInside = textile['phrase'].inside;
 	var nestedPatterns = {
-		'inline': Prism.util.clone(Prism.languages.textile['phrase'].inside['inline']),
-		'link': Prism.util.clone(Prism.languages.textile['phrase'].inside['link']),
-		'image': Prism.util.clone(Prism.languages.textile['phrase'].inside['image']),
-		'footnote': Prism.util.clone(Prism.languages.textile['phrase'].inside['footnote']),
-		'acronym': Prism.util.clone(Prism.languages.textile['phrase'].inside['acronym']),
-		'mark': Prism.util.clone(Prism.languages.textile['phrase'].inside['mark'])
+		'inline': phraseInside['inline'],
+		'link': phraseInside['link'],
+		'image': phraseInside['image'],
+		'footnote': phraseInside['footnote'],
+		'acronym': phraseInside['acronym'],
+		'mark': phraseInside['mark']
 	};
 
 	// Only allow alpha-numeric HTML tags, not XML tags
-	Prism.languages.textile.tag.pattern = /<\/?(?!\d)[a-z0-9]+(?:\s+[^\s>\/=]+(?:=(?:("|')(?:\\\1|\\?(?!\1)[\w\W])*\1|[^\s'">=]+))?)*\s*\/?>/i;
+	textile.tag.pattern = /<\/?(?!\d)[a-z0-9]+(?:\s+[^\s>\/=]+(?:=(?:("|')(?:\\[\s\S]|(?!\1)[^\\])*\1|[^\s'">=]+))?)*\s*\/?>/i;
 
 	// Allow some nesting
-	Prism.languages.textile['phrase'].inside['inline'].inside['bold'].inside = nestedPatterns;
-	Prism.languages.textile['phrase'].inside['inline'].inside['italic'].inside = nestedPatterns;
-	Prism.languages.textile['phrase'].inside['inline'].inside['inserted'].inside = nestedPatterns;
-	Prism.languages.textile['phrase'].inside['inline'].inside['deleted'].inside = nestedPatterns;
-	Prism.languages.textile['phrase'].inside['inline'].inside['span'].inside = nestedPatterns;
+	var phraseInlineInside = phraseInside['inline'].inside;
+	phraseInlineInside['bold'].inside = nestedPatterns;
+	phraseInlineInside['italic'].inside = nestedPatterns;
+	phraseInlineInside['inserted'].inside = nestedPatterns;
+	phraseInlineInside['deleted'].inside = nestedPatterns;
+	phraseInlineInside['span'].inside = nestedPatterns;
 
 	// Allow some styles inside table cells
-	Prism.languages.textile['phrase'].inside['table'].inside['inline'] = nestedPatterns['inline'];
-	Prism.languages.textile['phrase'].inside['table'].inside['link'] = nestedPatterns['link'];
-	Prism.languages.textile['phrase'].inside['table'].inside['image'] = nestedPatterns['image'];
-	Prism.languages.textile['phrase'].inside['table'].inside['footnote'] = nestedPatterns['footnote'];
-	Prism.languages.textile['phrase'].inside['table'].inside['acronym'] = nestedPatterns['acronym'];
-	Prism.languages.textile['phrase'].inside['table'].inside['mark'] = nestedPatterns['mark'];
+	var phraseTableInside = phraseInside['table'].inside;
+	phraseTableInside['inline'] = nestedPatterns['inline'];
+	phraseTableInside['link'] = nestedPatterns['link'];
+	phraseTableInside['image'] = nestedPatterns['image'];
+	phraseTableInside['footnote'] = nestedPatterns['footnote'];
+	phraseTableInside['acronym'] = nestedPatterns['acronym'];
+	phraseTableInside['mark'] = nestedPatterns['mark'];
 
 }(Prism));

@@ -10,10 +10,17 @@
 	Prism.plugins.toolbar = {};
 
 	/**
+	 * @typedef ButtonOptions
+	 * @property {string} text The text displayed.
+	 * @property {string} [url] The URL of the link which will be created.
+	 * @property {Function} [onClick] The event listener for the `click` event of the created button.
+	 */
+
+	/**
 	 * Register a button callback with the toolbar.
 	 *
 	 * @param {string} key
-	 * @param {Object|Function} opts
+	 * @param {ButtonOptions|Function} opts
 	 */
 	var registerButton = Prism.plugins.toolbar.registerButton = function (key, opts) {
 		var callback;
@@ -43,6 +50,11 @@
 			};
 		}
 
+		if (key in map) {
+			console.warn('There is a button with the key "' + key + '" registered already.');
+			return;
+		}
+
 		callbacks.push(map[key] = callback);
 	};
 
@@ -59,11 +71,15 @@
 		}
 
 		// Autoloader rehighlights, so only do this once.
-		if (pre.classList.contains('code-toolbar')) {
+		if (pre.parentNode.classList.contains('code-toolbar')) {
 			return;
 		}
 
-		pre.classList.add('code-toolbar');
+		// Create wrapper for <pre> to prevent scrolling toolbar with content
+		var wrapper = document.createElement("div");
+		wrapper.classList.add("code-toolbar");
+		pre.parentNode.insertBefore(wrapper, pre);
+		wrapper.appendChild(pre);
 
 		// Setup the toolbar
 		var toolbar = document.createElement('div');
@@ -89,8 +105,8 @@
 			toolbar.appendChild(item);
 		});
 
-		// Add our toolbar to the <pre> tag
-		pre.appendChild(toolbar);
+		// Add our toolbar to the currently created wrapper of <pre> tag
+		wrapper.appendChild(toolbar);
 	};
 
 	registerButton('label', function(env) {
