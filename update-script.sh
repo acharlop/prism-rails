@@ -139,70 +139,12 @@ copy_files ${path_from_themes_additional} ${path_to_themes}
 
 exit 0
 
-# copy non minified javascript language file to gem folder
-echo "Copying Files"
-lang_count=0
-for f in `find ./prism/components -name "*.js" \! -name "*.min.js"`
-do
-  ((lang_count++))
-  echo $f
-  cp -f $f $gem_lang_js
-done
-echo -e "    language files copied: ${lang_count}"
-
-echo "TEMP EXIT"
-exit 0
-
-
-# copy non minified javascript language file to gem folder
-plug_count=0
-for f in `find ./prism/plugins/ -name "*.js" \! -name "*.min.js"`
-do
-  ((plug_count++))
-  cp -f $f "${gem_js}/prism-plugin"
-done
-echo -e "\n${plug_count} - plugin files copied"
-
-# commit
-# TODO check files and commit with standard
-# git commit -a -m "Update javascript files to version ${version number}"
-
 
 # javascript copy reporting
 js_count=`ls -1 ${gem_js} | wc -l | xargs`
 cp_js_count=$((plug_count + lang_count))
 echo "---------------------------"
 echo -e "${cp_js_count} out of ${js_count} javascript files updated\n"
-
-
-# copy non minified styles to gem folder
-base_count=0
-for f in `find ./prism/themes/ -name "*.css"`
-do
-  ((base_count++))
-  cp -f $f $gem_cs
-done
-echo -e "\n${base_count} - base themes files copied"
-
-
-# copy non minified styles to gem folder
-plug_count=0
-for f in `find ./prism/plugins/ -name "*.css"`
-do
-  ((plug_count++))
-  cp -f $f $gem_cs
-done
-echo -e "\n${plug_count} - plugin theme files copied"
-
-
-# copy non minified styles to gem folder
-styl_count=0
-for f in `find ./prism-themes/themes/ -name "*.css"`
-do
-  ((styl_count++))
-  cp -f $f $gem_cs
-done
-echo -e "\n${styl_count} - extra themes files copied"
 
 
 # css copy report
