@@ -7,24 +7,31 @@ javascript="js"
 stylesheet="css"
 stage=${javascript}
 
+# repos and base path variables
 prism="prism"
 prism_themes="prism-themes"
 external="external_libraries"
 
+# base from paths
 path_prism="./${external}/${prism}"
 path_prism_themes="./${external}/${prism_themes}"
+# from paths
 path_from_languages="${path_prism}/components"
 path_from_plugins="${path_prism}/plugins"
 path_from_themes="${path_prism}/themes"
 path_from_themes_additional="${path_prism_themes}/themes"
 
+# base to paths
 path_to_css="./vendor/assets/stylesheets/"
 path_to_js="./vendor/assets/javascripts/"
-path_to_languages="${path_to_js}/prism"
-path_to_plugins_js="${path_to_js}/prism-plugins"
-path_to_plugins_css="${path_to_css}/prism-plugins"
-path_to_themes="${path_to_css}/prism-themes"
+# to paths
+path_to_languages="${path_to_js}/languages"
+path_to_plugins_js="${path_to_js}/prism-plugin"
+path_to_plugins_css="${path_to_css}/prism-plugin"
+path_to_themes="${path_to_css}/prism-theme"
 
+# main files
+file="${path_to_js}/prism.js"
 
 ####################
 # HELPER FUNCTIONS #
@@ -47,7 +54,7 @@ check_out_repo() {
 
   echo "Checking out"
   echo "    repo: ${repo}"
-  echo "    tag: ${latest_tag}"
+  echo "    tag:  ${latest_tag}"
   echo ""
   git checkout ${latest_tag} --quiet
   popd
@@ -64,9 +71,9 @@ copy_files() {
   # build find command
   cmd="find ${from} -name "
   if [[ "$stage" == "$javascript" ]]; then
-    cmd+='"*.js" \! -name "*.min.js"'
+    cmd+='"prism-*.js" \! -name "*.min.js"'
   else
-    cmd+='"*.css"'
+    cmd+='"prism-*.css"'
   fi
 
   if ${exact} ; then
@@ -85,22 +92,39 @@ copy_files() {
   fi
 }
 
+write_main_import_file() {
+  # find all languages
+  find_cmd='find . -name "prism-*.js" \! -name "*.min.js"'
+  # package info
+  header=`head -4 ${file} | sed 's/:/  :/g'`
+  # call prism highlight
+  footer=`tail -6 ${file}`
+
+  # get all languages
+  pushd ${path_from_languages}
+  languages=`eval ${find_cmd} | sort | sed 's/\.\/prism-/\/\/\= require \.\/languages\/prism-/g' | sed 's/\.js//g'`
+  count=`eval ${find_cmd} | wc -l | sed 's/^ *//g'`
+  popd
+
+  # write file
+  printf "%s" "${header}" > "${file}"
+  echo -e "\n//! languages : ${count}\n" >> "${file}"
+  printf "%s" "${languages}" >> "${file}"
+  echo "" >> "${file}"
+  printf "%s" "${footer}" >> "${file}"
+  echo "" >> "${file}"
+}
 # Needed steps
-# 1) copy prism.js to vendor/javascript/prism.js
-# 2) check there are 121 languages if not add to prism-rails.js
-# 3) copy files over -- cp `find . -name "*.js" \! -name "*.min.js"` ../../prism-rails/vendor/assets/javascripts/prism/
-# 4) List what's been changed
-# 5) copy plugins to prism-plugin/ folder js and css
 # 6) update changelog
 # 7) run rake release
 
 #########################
 # CHECK FOR GIT CHANGES #
 #########################
-#if ! git diff-index --quiet HEAD --; then
+if ! git diff-index --quiet HEAD --; then
  echo "Exiting due to uncommitted git changes"
  exit 1
-#fi
+fi
 
 
 ###################
@@ -117,7 +141,6 @@ popd
 # COPY JAVASCRIPT FILES #
 #########################
 stage=${javascript}
-# MAIN JS FILE
 # LANGUAGE FILES
 copy_files ${path_from_languages} ${path_to_languages}
 # PLUGIN FILES
@@ -129,7 +152,7 @@ copy_files ${path_from_plugins} ${path_to_plugins_js}
 #########################
 stage=${stylesheet}
 # MAIN CSS FILE
-copy_files "${path_prism}/style.css" "${path_to_css}/prism.css" true
+copy_files "${path_from_themes}/prism.css" "${path_to_css}/prism.css" true
 # PLUGINS FILES
 copy_files ${path_from_plugins} ${path_to_plugins_css}
 # THEMES FILES
@@ -137,9 +160,12 @@ copy_files ${path_from_themes} ${path_to_themes}
 # EXTRA THEMES FILES
 copy_files ${path_from_themes_additional} ${path_to_themes}
 
-exit 0
+##########################
+# JAVASCRIPT IMPORT FILE #
+##########################
+write_main_import_file
 
-
+exit 1
 # javascript copy reporting
 js_count=`ls -1 ${gem_js} | wc -l | xargs`
 cp_js_count=$((plug_count + lang_count))
