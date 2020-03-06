@@ -3,9 +3,12 @@
 #############
 # VARIABLES #
 #############
+update_message="Update library to match latest Prism.js version"
 javascript="js"
 stylesheet="css"
 stage=${javascript}
+default=false
+fully_automated=${1:-$default}
 
 # repos and base path variables
 prism="prism"
@@ -30,8 +33,11 @@ path_to_plugins_js="${path_to_js}/prism-plugin"
 path_to_plugins_css="${path_to_css}/prism-plugin"
 path_to_themes="${path_to_css}/prism-theme"
 
-# main files
-file="${path_to_js}/prism.js"
+# files
+import_file="${path_to_js}/prism.js"
+version_file="./lib/prism-rails/version.rb"
+readme_file="./README.md"
+changelog_file="./CHANGELOG.md"
 
 ####################
 # HELPER FUNCTIONS #
@@ -63,8 +69,6 @@ check_out_repo() {
 copy_files() {
   from=$1
   to=$2
-
-  default=false
   exact=${3:-$default}
 
 
@@ -92,28 +96,6 @@ copy_files() {
   fi
 }
 
-write_main_import_file() {
-  # find all languages
-  find_cmd='find . -name "prism-*.js" \! -name "*.min.js"'
-  # package info
-  header=`head -4 ${file} | sed 's/:/  :/g'`
-  # call prism highlight
-  footer=`tail -6 ${file}`
-
-  # get all languages
-  pushd ${path_from_languages}
-  languages=`eval ${find_cmd} | sort | sed 's/\.\/prism-/\/\/\= require \.\/languages\/prism-/g' | sed 's/\.js//g'`
-  count=`eval ${find_cmd} | wc -l | sed 's/^ *//g'`
-  popd
-
-  # write file
-  printf "%s" "${header}" > "${file}"
-  echo -e "\n//! languages : ${count}\n" >> "${file}"
-  printf "%s" "${languages}" >> "${file}"
-  echo "" >> "${file}"
-  printf "%s" "${footer}" >> "${file}"
-  echo "" >> "${file}"
-}
 # Needed steps
 # 6) update changelog
 # 7) run rake release
@@ -160,45 +142,64 @@ copy_files ${path_from_themes} ${path_to_themes}
 # EXTRA THEMES FILES
 copy_files ${path_from_themes_additional} ${path_to_themes}
 
+
 ##########################
 # JAVASCRIPT IMPORT FILE #
 ##########################
-write_main_import_file
+# find all languages
+find_cmd='find . -name "prism-*.js" \! -name "*.min.js"'
+# package info
+header=`head -4 ${import_file} | sed 's/:/  :/g'`
+# call prism highlight
+footer=`tail -6 ${import_file}`
 
-exit 1
-# javascript copy reporting
-js_count=`ls -1 ${gem_js} | wc -l | xargs`
-cp_js_count=$((plug_count + lang_count))
-echo "---------------------------"
-echo -e "${cp_js_count} out of ${js_count} javascript files updated\n"
+# get all languages
+pushd ${path_from_languages}
+languages=`eval ${find_cmd} | sort | sed 's/\.\/prism-/\/\/\= require \.\/languages\/prism-/g' | sed 's/\.js//g'`
+count=`eval ${find_cmd} | wc -l | sed 's/^ *//g'`
+popd
 
-
-# css copy report
-cs_count=`ls -1 ${gem_cs} | wc -l | xargs`
-cp_cs_count=$((base_count + styl_count + plug_count))
-echo "---------------------------"
-echo -e "${cp_cs_count} out of ${cs_count} css files updated\n\n"
-
-
-# git diff report
-cd $gem
-git diff --stat
-echo -e "\n\n"
-
-# update versioning
-old_version=`head -1 ./temp_prism/prism-rails/README.md | grep -o "[0-9]\.[0-9]\.[0-9]"`
-new_version=`grep "version" ./temp_prism/prism/package.json | grep -o "[0-9]\.[0-9]\.[0-9]"`
-
-for f in "./prism-rails/README.md" "./prism-rails/lib/prism-rails/version.rb"
-do
-  sed -i "" "s/${old_version}/${new_version}/g" $f
-  echo -e "${f} version updated from ${old_version} to ${new_version}\n"
-done
-
-# non automated tasks
-echo -e "\n\n"
-echo "To finish release:"
-echo "1) Commit changes"
-echo "2) Use \"rake release\" to publish"
+# write file
+printf "%s" "${header}" > "${import_file}"
+echo -e "\n//! languages : ${count}\n" >> "${import_file}"
+printf "%s" "${languages}" >> "${import_file}"
+echo "" >> "${import_file}"
+printf "%s" "${footer}" >> "${import_file}"
+echo "" >> "${import_file}"
 
 
+######################
+# UPDATE LIB VERSION #
+######################
+# get new version number
+pushd ${external}/${prism}
+new_version=$(git describe --tags | sed -E 's/(v|-.*$)//g')
+popd
+
+# write new version number
+match_space=" [^ ]*$"
+sed -i '' "2s/${match_space}/ ${new_version}/" ${import_file}
+sed -i '' "2s/${match_space}/ \"${new_version}\"/" ${version_file}
+sed -i '' "1s/${match_space}/ ${new_version}/" ${readme_file}
+
+# write changelog
+sed -i '' "3i\\
+\\
+## ${new_version} ($(date +"%Y-%m-%d"))\\
+* ${update_message}\\
+" ${changelog_file}
+
+
+##################
+# COMMIT CHANGES #
+##################
+if ${fully_automated} ; then
+  git add .
+  git commit -m "${update_message}"
+  rake release
+else
+  echo -e "\n\n"
+  echo "To finish release:"
+  echo "1) Commit changes"
+  echo "2) Use \"rake release\" to publish"
+fi
