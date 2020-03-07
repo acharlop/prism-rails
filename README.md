@@ -24,48 +24,23 @@ Add the css for the default styling `application.css`:
 *= require prism
 ```
 
-Or use one of the other themes below. See [Prism](http://prismjs.com) and [prism-themes](https://github.com/PrismJS/prism-themes) for examples.
+## Themes
 
-* atom-dark
-* base16-ateliersulphurpool.light
-* cb
-* coy
-* dark
-* duotone-dark
-* duotone-earth
-* duotone-forest
-* duotone-light
-* duotone-sea
-* duotone-space
-* funky
-* ghcolors
-* hopscotch
-* okaidia
-* pojoaque
-* solarizedlight
-* tomorrow
-* twilight
-* xonokai
+See [Prism](http://prismjs.com) and [prism-themes](https://github.com/PrismJS/prism-themes) for examples.
+
+For a full list of themes see [below](#themes-list)
+
+Add below the default styling in `application.css`:
+
+```ruby
+*= require prism-theme/prism-[theme-name]
+```
 
 ## Plugins
 
-See [Prism](http://prismjs.com/#plugins) for more details about the plugins
+See [Prism.com/#plugins](http://prismjs.com/#plugins) for more details.
 
-* autolinker
-* command-line
-* ie8
-* line-highlight
-* line-numbers
-* previewer-angle
-* previewer-base
-* previewer-color
-* previewer-easing
-* previewer-gradient
-* previewer-time
-* show-invisibles
-* show-language
-* unescaped-markup
-* wpd
+For a full list of plugins see [below](#plugins-list)
 
 Add the following to your Javascript manifest file `application.js`:
 
@@ -93,3 +68,46 @@ Bug reports and pull requests are welcome on [GitHub](https://github.com/acharlo
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
+
+### Themes List
+<div id="themes-list"></div>
+
+* atom-dark
+* base16-ateliersulphurpool.light
+* cb
+* coy
+* dark
+* duotone-dark
+* duotone-earth
+* duotone-forest
+* duotone-light
+* duotone-sea
+* duotone-space
+* funky
+* ghcolors
+* hopscotch
+* okaidia
+* pojoaque
+* solarizedlight
+* tomorrow
+* twilight
+* xonokai
+
+### Plugins List
+<div id="plugins-list"></div>
+
+* autolinker
+* command-line
+* ie8
+* line-highlight
+* line-numbers
+* previewer-angle
+* previewer-base
+* previewer-color
+* previewer-easing
+* previewer-gradient
+* previewer-time
+* show-invisibles
+* show-language
+* unescaped-markup
+* wpd
