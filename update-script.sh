@@ -220,6 +220,38 @@ for theme in ${path_to_themes}/*.css; do
 done
 
 
+#######################
+# WRITE PLUGINS LISTS #
+#######################
+# line numbers
+last_line=$((`awk '/id="plugins-list/{ print NR; exit }' ${readme_file}` + 2))
+
+# remove old list of plugins
+sed -i '' "${last_line},$ d" ${readme_file}
+
+# insert table header
+sed -i '' "$ a\\
+Plugin | CSS\\
+:--- | :---\\
+" ${readme_file}
+
+# loop through plugins and insert
+for plugin in ${path_to_plugins_js}/*.js; do
+  # cleanup plugin variable
+  plugin=`echo ${plugin} | sed -E 's/.*prism-(.*).js/\1/'`
+  # check if plugin has css file
+  if [[ -f "${path_to_plugins_css}/prism-${plugin}.css" ]]; then
+    plugin+=" | :white_check_mark:"
+  else
+    plugin+=" | :x:"
+  fi
+  # insert line
+  sed -i '' "$ a\\
+${plugin}\\
+" ${readme_file}
+done
+
+
 ##################
 # COMMIT CHANGES #
 ##################
