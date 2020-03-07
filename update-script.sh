@@ -25,8 +25,8 @@ path_from_themes="${path_prism}/themes"
 path_from_themes_additional="${path_prism_themes}/themes"
 
 # base to paths
-path_to_css="./vendor/assets/stylesheets/"
-path_to_js="./vendor/assets/javascripts/"
+path_to_css="./vendor/assets/stylesheets"
+path_to_js="./vendor/assets/javascripts"
 # to paths
 path_to_languages="${path_to_js}/languages"
 path_to_plugins_js="${path_to_js}/prism-plugin"
@@ -38,6 +38,16 @@ import_file="${path_to_js}/prism.js"
 version_file="./lib/prism-rails/version.rb"
 readme_file="./README.md"
 changelog_file="./CHANGELOG.md"
+
+####################
+# MAKE DIRECTORIES #
+####################
+mkdir -p ${external}
+mkdir -p ${path_to_languages}
+mkdir -p ${path_to_plugins_js}
+mkdir -p ${path_to_plugins_css}
+mkdir -p ${path_to_themes}
+
 
 ####################
 # HELPER FUNCTIONS #
@@ -112,7 +122,6 @@ fi
 ###################
 # GET LATEST TAGS #
 ###################
-mkdir -p ${external}
 pushd ${external}
 check_out_repo ${prism}
 check_out_repo ${prism_themes}
