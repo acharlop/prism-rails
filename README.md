@@ -30,25 +30,11 @@ See [Prism](http://prismjs.com) and [prism-themes](https://github.com/PrismJS/pr
 
 For a full list of themes see [below](#themes-list)
 
-Add below the default styling in `application.css`:
-
-```ruby
-*= require prism-theme/prism-[theme-name]
-```
-
-## Plugins
-
-See [Prism.com/#plugins](http://prismjs.com/#plugins) for more details.
-
-For a full list of plugins see [below](#plugins-list)
-
-Add the following to your Javascript manifest file `application.js`:
-
 ```ruby
 //= require prism-plugin/prism-[plugin-name]
 ```
 
-Add the following to your `application.scss`:
+If necessary add the following to your `application.scss`:
 
 ```ruby
 *= require prism-plugin/prism-[plugin-name]
