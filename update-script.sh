@@ -96,7 +96,7 @@ copy_files() {
     count=`eval ${cmd} | wc -l`
   fi
 
-  printf "Copying %10s files %10s %-40s %10s %-30s\n" "${count}" "from" "${from}" "to" "${to}"
+  printf "Copying %10s files %10s %-55s %10s %-30s\n" "${count}" "from" "${from}" "to" "${to}"
 
   if ${exact} ; then
     cp ${from} ${to}
