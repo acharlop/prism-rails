@@ -106,9 +106,6 @@ copy_files() {
   fi
 }
 
-# Needed steps
-# 6) update changelog
-# 7) run rake release
 
 #########################
 # CHECK FOR GIT CHANGES #
@@ -197,6 +194,30 @@ sed -i '' "3i\\
 ## ${new_version} ($(date +"%Y-%m-%d"))\\
 * ${update_message}\\
 " ${changelog_file}
+
+
+######################
+# WRITE THEMES LISTS #
+######################
+# line numbers
+start_line=$((`awk '/id="themes-list/{ print NR; exit }' ${readme_file}` + 2))
+insert_line=$((start_line - 1))
+end_line=$((`awk '/id="plugins-list/{ print NR; exit }' ${readme_file}` - 3))
+
+# remove old list of themes
+sed -i '' "${start_line},${end_line} {/\*/d;}" ${readme_file}
+
+# loop through themes and insert
+for theme in ${path_to_themes}/*.css; do
+  # cleanup theme variable
+  theme=`echo ${theme} | sed -E 's/.*prism-(.*).css/\1/'`
+  # insert line
+  sed -i '' "${insert_line} a\\
+* ${theme}\\
+" ${readme_file}
+  # update where to insert
+  ((insert_line=insert_line+1))
+done
 
 
 ##################
