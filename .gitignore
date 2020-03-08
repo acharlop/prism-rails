@@ -14,3 +14,6 @@ Gemfile.lock
 .idea
 .DS_Store
 pkg/
+
+# directory for prism and prism-themes
+external_libraries/

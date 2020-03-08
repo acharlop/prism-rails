@@ -24,7 +24,39 @@ Add the css for the default styling `application.css`:
 *= require prism
 ```
 
-Or use one of the other themes below. See [Prism](http://prismjs.com) and [prism-themes](https://github.com/PrismJS/prism-themes) for examples.
+## Themes
+
+See [Prism](http://prismjs.com) and [prism-themes](https://github.com/PrismJS/prism-themes) for examples.
+
+For a full list of themes see [below](#themes-list)
+
+```ruby
+//= require prism-plugin/prism-[plugin-name]
+```
+
+If necessary add the following to your `application.scss`:
+
+```ruby
+*= require prism-plugin/prism-[plugin-name]
+```
+
+## Versioning
+prism-rails 1.6.0 == Prism.js 1.6.0
+Every attempt is made to mirror the currently shipping Prism.js version number wherever possible. The major, minor, and patch version numbers will always represent the Prism.js version. Should a gem bug be discovered, a 4th version identifier will be added and incremented.
+
+## Contributing
+
+Bug reports and pull requests are welcome on [GitHub](https://github.com/acharlop/prism-rails).
+
+### Contributors
+[@simmerz](https://github.com/simmerz)
+
+## License
+
+The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
+
+### Themes List
+<div id="themes-list"></div>
 
 * atom-dark
 * base16-ateliersulphurpool.light
@@ -47,9 +79,8 @@ Or use one of the other themes below. See [Prism](http://prismjs.com) and [prism
 * twilight
 * xonokai
 
-## Plugins
-
-See [Prism](http://prismjs.com/#plugins) for more details about the plugins
+### Plugins List
+<div id="plugins-list"></div>
 
 * autolinker
 * command-line
@@ -66,30 +97,3 @@ See [Prism](http://prismjs.com/#plugins) for more details about the plugins
 * show-language
 * unescaped-markup
 * wpd
-
-Add the following to your Javascript manifest file `application.js`:
-
-```ruby
-//= require prism-plugin/prism-[plugin-name]
-```
-
-Add the following to your `application.scss`:
-
-```ruby
-*= require prism-plugin/prism-[plugin-name]
-```
-
-## Versioning
-prism-rails 1.6.0 == Prism.js 1.6.0
-Every attempt is made to mirror the currently shipping Prism.js version number wherever possible. The major, minor, and patch version numbers will always represent the Prism.js version. Should a gem bug be discovered, a 4th version identifier will be added and incremented.
-
-## Contributing
-
-Bug reports and pull requests are welcome on [GitHub](https://github.com/acharlop/prism-rails).
-
-### Contributors
-[@simmerz](https://github.com/simmerz)
-
-## License
-
-The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
