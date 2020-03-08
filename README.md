@@ -1,4 +1,4 @@
-# prism-rails 1.16.0
+# prism-rails 1.19.0
 
 prism-rails wraps the [Prism.js](https://github.com/PrismJS/prism) library in a rails engine for simple use with the asset pipeline
 
@@ -58,11 +58,16 @@ The gem is available as open source under the terms of the [MIT License](http://
 ### Themes List
 <div id="themes-list"></div>
 
+* a11y-dark
 * atom-dark
+* autolinker
 * base16-ateliersulphurpool.light
 * cb
+* command-line
 * coy
+* darcula
 * dark
+* dracula
 * duotone-dark
 * duotone-earth
 * duotone-forest
@@ -72,28 +77,63 @@ The gem is available as open source under the terms of the [MIT License](http://
 * funky
 * ghcolors
 * hopscotch
+* line-highlight
+* line-numbers
+* material-dark
+* material-light
+* material-oceanic
+* nord
 * okaidia
 * pojoaque
+* previewers
+* shades-of-purple
+* show-invisibles
+* show-language
 * solarizedlight
+* synthwave84
 * tomorrow
+* toolbar
 * twilight
+* unescaped-markup
+* vs
+* vsc-dark-plus
+* wpd
 * xonokai
 
 ### Plugins List
 <div id="plugins-list"></div>
 
-* autolinker
-* command-line
-* ie8
-* line-highlight
-* line-numbers
-* previewer-angle
-* previewer-base
-* previewer-color
-* previewer-easing
-* previewer-gradient
-* previewer-time
-* show-invisibles
-* show-language
-* unescaped-markup
-* wpd
+Plugin | CSS
+:--- | :---
+autolinker | :white_check_mark:
+autoloader | :x:
+command-line | :white_check_mark:
+copy-to-clipboard | :x:
+custom-class | :x:
+data-uri-highlight | :x:
+diff-highlight | :white_check_mark:
+download-button | :x:
+file-highlight | :x:
+filter-highlight-all | :x:
+highlight-keywords | :x:
+ie8 | :white_check_mark:
+inline-color | :white_check_mark:
+jsonp-highlight | :x:
+keep-markup | :x:
+line-highlight | :white_check_mark:
+line-numbers | :white_check_mark:
+match-braces | :white_check_mark:
+normalize-whitespace | :x:
+previewer-angle | :white_check_mark:
+previewer-base | :white_check_mark:
+previewer-color | :white_check_mark:
+previewer-easing | :white_check_mark:
+previewer-gradient | :white_check_mark:
+previewer-time | :white_check_mark:
+previewers | :white_check_mark:
+remove-initial-line-feed | :x:
+show-invisibles | :white_check_mark:
+show-language | :x:
+toolbar | :white_check_mark:
+unescaped-markup | :white_check_mark:
+wpd | :white_check_mark:
