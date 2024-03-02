@@ -1,4 +1,4 @@
-# prism-rails 1.19.0
+# prism-rails 1.29.0
 
 prism-rails wraps the [Prism.js](https://github.com/PrismJS/prism) library in a rails engine for simple use with the asset pipeline
 
@@ -63,10 +63,15 @@ The gem is available as open source under the terms of the [MIT License](http://
 * autolinker
 * base16-ateliersulphurpool.light
 * cb
+* coldark-cold
+* coldark-dark
 * command-line
+* coy-without-shadows
 * coy
+* coy.min
 * darcula
 * dark
+* dark.min
 * dracula
 * duotone-dark
 * duotone-earth
@@ -75,30 +80,45 @@ The gem is available as open source under the terms of the [MIT License](http://
 * duotone-sea
 * duotone-space
 * funky
+* funky.min
 * ghcolors
+* gruvbox-dark
+* gruvbox-light
+* holi-theme
 * hopscotch
+* laserwave
 * line-highlight
 * line-numbers
+* lucario
 * material-dark
 * material-light
 * material-oceanic
+* night-owl
 * nord
 * okaidia
+* okaidia.min
+* one-dark
+* one-light
 * pojoaque
 * previewers
 * shades-of-purple
 * show-invisibles
 * show-language
+* solarized-dark-atom
 * solarizedlight
+* solarizedlight.min
 * synthwave84
 * tomorrow
+* tomorrow.min
 * toolbar
 * twilight
+* twilight.min
 * unescaped-markup
 * vs
 * vsc-dark-plus
 * wpd
 * xonokai
+* z-touch
 
 ### Plugins List
 <div id="plugins-list"></div>
@@ -135,5 +155,6 @@ remove-initial-line-feed | :x:
 show-invisibles | :white_check_mark:
 show-language | :x:
 toolbar | :white_check_mark:
+treeview | :white_check_mark:
 unescaped-markup | :white_check_mark:
 wpd | :white_check_mark:
