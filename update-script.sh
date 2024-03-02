@@ -48,13 +48,12 @@ mkdir -p ${path_to_plugins_js}
 mkdir -p ${path_to_plugins_css}
 mkdir -p ${path_to_themes}
 
-
 ####################
 # HELPER FUNCTIONS #
 ####################
-pushd () { command pushd "$@" > /dev/null; }
+pushd() { command pushd "$@" >/dev/null; }
 
-popd () { command popd "$@" > /dev/null; }
+popd() { command popd "$@" >/dev/null; }
 
 check_out_repo() {
   # get repo
@@ -81,7 +80,6 @@ copy_files() {
   to=$2
   exact=${3:-$default}
 
-
   # build find command
   cmd="find ${from} -name "
   if [[ "$stage" == "$javascript" ]]; then
@@ -90,31 +88,29 @@ copy_files() {
     cmd+='"prism-*.css"'
   fi
 
-  if ${exact} ; then
+  if ${exact}; then
     count="1"
   else
-    count=`eval ${cmd} | wc -l`
+    count=$(eval ${cmd} | wc -l)
   fi
 
   printf "Copying %10s files %10s %-55s %10s %-30s\n" "${count}" "from" "${from}" "to" "${to}"
 
-  if ${exact} ; then
+  if ${exact}; then
     cp ${from} ${to}
   else
     copy_cmd="${cmd} -exec cp {} ${to} \;"
-    eval ${copy_cmd};
+    eval ${copy_cmd}
   fi
 }
-
 
 #########################
 # CHECK FOR GIT CHANGES #
 #########################
 if ! git diff-index --quiet HEAD --; then
- echo "Exiting due to uncommitted git changes"
- exit 1
+  echo "Exiting due to uncommitted git changes"
+  exit 1
 fi
-
 
 ###################
 # GET LATEST TAGS #
@@ -124,7 +120,6 @@ check_out_repo ${prism}
 check_out_repo ${prism_themes}
 popd
 
-
 #########################
 # COPY JAVASCRIPT FILES #
 #########################
@@ -133,7 +128,6 @@ stage=${javascript}
 copy_files ${path_from_languages} ${path_to_languages}
 # PLUGIN FILES
 copy_files ${path_from_plugins} ${path_to_plugins_js}
-
 
 #########################
 # COPY STYLESHEET FILES #
@@ -148,31 +142,29 @@ copy_files ${path_from_themes} ${path_to_themes}
 # EXTRA THEMES FILES
 copy_files ${path_from_themes_additional} ${path_to_themes}
 
-
 ##########################
 # JAVASCRIPT IMPORT FILE #
 ##########################
 # find all languages
 find_cmd='find . -name "prism-*.js" \! -name "*.min.js"'
 # package info
-header=`head -4 ${import_file} | sed 's/:/  :/g'`
+header=$(head -4 ${import_file} | sed 's/:/  :/g')
 # call prism highlight
-footer=`tail -6 ${import_file}`
+footer=$(tail -6 ${import_file})
 
 # get all languages
 pushd ${path_from_languages}
-languages=`eval ${find_cmd} | sort | sed 's/\.\/prism-/\/\/\= require \.\/languages\/prism-/g' | sed 's/\.js//g'`
-count=`eval ${find_cmd} | wc -l | sed 's/^ *//g'`
+languages=$(eval ${find_cmd} | sort | sed 's/\.\/prism-/\/\/\= require \.\/languages\/prism-/g' | sed 's/\.js//g')
+count=$(eval ${find_cmd} | wc -l | sed 's/^ *//g')
 popd
 
 # write file
-printf "%s" "${header}" > "${import_file}"
-echo -e "\n//! languages : ${count}\n" >> "${import_file}"
-printf "%s" "${languages}" >> "${import_file}"
-echo "" >> "${import_file}"
-printf "%s" "${footer}" >> "${import_file}"
-echo "" >> "${import_file}"
-
+printf "%s" "${header}" >"${import_file}"
+echo -e "\n//! languages : ${count}\n" >>"${import_file}"
+printf "%s" "${languages}" >>"${import_file}"
+echo "" >>"${import_file}"
+printf "%s" "${footer}" >>"${import_file}"
+echo "" >>"${import_file}"
 
 ######################
 # UPDATE LIB VERSION #
@@ -195,14 +187,13 @@ sed -i '' "3i\\
 * ${update_message}\\
 " ${changelog_file}
 
-
 ######################
 # WRITE THEMES LISTS #
 ######################
 # line numbers
-start_line=$((`awk '/id="themes-list/{ print NR; exit }' ${readme_file}` + 2))
+start_line=$(($(awk '/id="themes-list/{ print NR; exit }' ${readme_file}) + 2))
 insert_line=$((start_line - 1))
-end_line=$((`awk '/id="plugins-list/{ print NR; exit }' ${readme_file}` - 3))
+end_line=$(($(awk '/id="plugins-list/{ print NR; exit }' ${readme_file}) - 3))
 
 # remove old list of themes
 sed -i '' "${start_line},${end_line} {/\*/d;}" ${readme_file}
@@ -210,21 +201,20 @@ sed -i '' "${start_line},${end_line} {/\*/d;}" ${readme_file}
 # loop through themes and insert
 for theme in ${path_to_themes}/*.css; do
   # cleanup theme variable
-  theme=`echo ${theme} | sed -E 's/.*prism-(.*).css/\1/'`
+  theme=$(echo ${theme} | sed -E 's/.*prism-(.*).css/\1/')
   # insert line
   sed -i '' "${insert_line} a\\
 * ${theme}\\
 " ${readme_file}
   # update where to insert
-  ((insert_line=insert_line+1))
+  ((insert_line = insert_line + 1))
 done
-
 
 #######################
 # WRITE PLUGINS LISTS #
 #######################
 # line numbers
-last_line=$((`awk '/id="plugins-list/{ print NR; exit }' ${readme_file}` + 2))
+last_line=$(($(awk '/id="plugins-list/{ print NR; exit }' ${readme_file}) + 2))
 
 # remove old list of plugins
 sed -i '' "${last_line},$ d" ${readme_file}
@@ -238,7 +228,7 @@ Plugin | CSS\\
 # loop through plugins and insert
 for plugin in ${path_to_plugins_js}/*.js; do
   # cleanup plugin variable
-  plugin=`echo ${plugin} | sed -E 's/.*prism-(.*).js/\1/'`
+  plugin=$(echo ${plugin} | sed -E 's/.*prism-(.*).js/\1/')
   # check if plugin has css file
   if [[ -f "${path_to_plugins_css}/prism-${plugin}.css" ]]; then
     plugin+=" | :white_check_mark:"
@@ -251,17 +241,18 @@ ${plugin}\\
 " ${readme_file}
 done
 
-
 ##################
 # COMMIT CHANGES #
 ##################
-if ${fully_automated} ; then
+if ${fully_automated}; then
   git add .
   git commit -m "${update_message}"
+  bundle update
   rake release
 else
   echo -e "\n\n"
   echo "To finish release:"
   echo "1) Commit changes"
-  echo "2) Use \"rake release\" to publish"
+  echo "2) Use \"bundle update\" to update gemspec"
+  echo "3) Use \"rake release\" to publish"
 fi
