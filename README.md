@@ -48,6 +48,28 @@ Every attempt is made to mirror the currently shipping Prism.js version number w
 
 Bug reports and pull requests are welcome on [GitHub](https://github.com/acharlop/prism-rails).
 
+## Maintaining
+
+Run the updater to sync vendored assets with the latest Prism.js tag:
+
+```sh
+ruby scripts/update_prism.rb
+```
+
+Use `--commit` to create the update commit, or `--release` to commit, update the bundle, and run `rake release`. The legacy `./update-script.sh true` entry point still works.
+
+## Demo App
+
+A Rails 8.1 demo lives in `demo/rails`:
+
+```sh
+cd demo/rails
+bundle install
+bin/rails server
+```
+
+The demo requires Ruby 3.2 or newer. It loads this gem from the local checkout, serves Prism through the Rails asset pipeline, and renders highlighted Ruby, JavaScript, and ERB examples. After the server starts, open [http://localhost:3000](http://localhost:3000).
+
 ### Contributors
 [@simmerz](https://github.com/simmerz)
 
