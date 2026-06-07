@@ -1,0 +1,93 @@
+/*
+ *= require prism-theme/cb
+ *= require prism-plugin/prism-line-numbers
+ *= require prism-plugin/prism-toolbar
+ */
+
+:root {
+  color-scheme: light;
+  --ink: #172033;
+  --muted: #5d6678;
+  --paper: #f8f7f3;
+  --panel: #ffffff;
+  --accent: #2f7d72;
+  --rule: #dedbd2;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', sans-serif;
+}
+
+.shell {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 48px 0;
+}
+
+.masthead {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.masthead h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 4rem);
+  letter-spacing: 0;
+}
+
+.masthead p {
+  max-width: 720px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.examples {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.example {
+  min-width: 0;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--panel);
+  overflow: hidden;
+}
+
+.example header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--rule);
+  padding: 12px 14px;
+}
+
+.example h2 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.example .language {
+  color: var(--accent);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.78rem;
+}
+
+.example pre {
+  min-height: 260px;
+  margin: 0;
+  border-radius: 0;
+}

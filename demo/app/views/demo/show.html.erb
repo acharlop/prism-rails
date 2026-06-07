@@ -1,0 +1,20 @@
+<main class="shell">
+  <section class="masthead">
+    <h1>prism-rails</h1>
+    <p>
+      Prism.js assets served through a Rails 8.1 app with Sprockets, using the gem directly from this checkout.
+    </p>
+  </section>
+
+  <section class="examples">
+    <% @examples.each do |example| %>
+      <article class="example">
+        <header>
+          <h2><%= example.fetch(:title) %></h2>
+          <span class="language"><%= example.fetch(:language) %></span>
+        </header>
+        <pre class="line-numbers"><code class="language-<%= example.fetch(:language) %>"><%= example.fetch(:code) %></code></pre>
+      </article>
+    <% end %>
+  </section>
+</main>
