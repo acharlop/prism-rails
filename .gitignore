@@ -1,20 +1,36 @@
+# Bundler
 /.bundle/
-/.yardoc
 /Gemfile.lock
-/_yardoc/
-/coverage/
-/doc/
+
+# Ruby gem build output
+/*.gem
 /pkg/
 
+# Test, coverage, and generated docs
+/coverage/
+/doc/
+/.yardoc/
+/_yardoc/
 /spec/reports/
-/tmp/
-.rake_tasks~
-*.gem
-Gemfile.lock
-.idea
-.DS_Store
-pkg/
-tmp/
 
-# directory for prism and prism-themes
-external_libraries/
+# Local temp files
+/tmp/
+/.rake_tasks~
+
+# Editor and OS metadata
+/.idea/
+.DS_Store
+
+# Local Codex/Claude app settings
+.claude/
+
+# Upstream Prism checkouts used by scripts/update_prism.rb
+/external_libraries/
+
+# Rails demo runtime output
+/demo/log/*
+/demo/tmp/*
+/demo/storage/*
+/demo/public/assets/
+/demo/public/packs/
+/demo/node_modules/

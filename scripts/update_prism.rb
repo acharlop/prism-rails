@@ -3,6 +3,7 @@
 
 require "date"
 require "fileutils"
+require "json"
 require "optparse"
 require "open3"
 require "pathname"
@@ -26,6 +27,7 @@ CHANGELOG_FILE = ROOT.join("CHANGELOG.md")
 UPDATE_MESSAGE = "Update library to match latest Prism.js version"
 
 options = {
+  allow_dirty: false,
   commit: false,
   release: false,
   tag: nil
@@ -33,6 +35,7 @@ options = {
 
 OptionParser.new do |parser|
   parser.banner = "Usage: ruby scripts/update_prism.rb [options]"
+  parser.on("--allow-dirty", "Run even when the git working tree has changes") { options[:allow_dirty] = true }
   parser.on("--commit", "Commit the generated changes") { options[:commit] = true }
   parser.on("--release", "Run bundle update and rake release after committing") do
     options[:commit] = true
@@ -92,10 +95,49 @@ def copy_matching(from, to, glob)
   files
 end
 
+# Returns the language keys (e.g. "ruby", "erb") in an order that guarantees
+# every language is required after the languages it depends on. Prism languages
+# extend one another (erb -> ruby + markup-templating -> markup, cpp -> c, ...),
+# so a plain alphabetical require order throws "Cannot set properties of
+# undefined" at load time. The dependency graph lives in Prism's components.json.
+def language_load_order
+  components = JSON.parse(PRISM_REPO.join("components.json").read)
+  languages = components.fetch("languages").reject { |key, _| key == "meta" }
+
+  dependencies = languages.each_with_object({}) do |(key, meta), acc|
+    deps = []
+    if meta.is_a?(Hash)
+      %w[require optional modify].each { |kind| deps.concat(Array(meta[kind])) }
+    end
+    acc[key] = deps
+  end
+
+  ordered = []
+  visiting = {}
+  visit = lambda do |key|
+    return if ordered.include?(key) || visiting[key]
+
+    visiting[key] = true
+    dependencies.fetch(key, []).each { |dep| visit.call(dep) if dependencies.key?(dep) }
+    visiting.delete(key)
+    ordered << key
+  end
+
+  dependencies.keys.sort.each { |key| visit.call(key) }
+  ordered
+end
+
 def write_import_file!(version)
-  language_files = Dir[LANGUAGES_DIR.join("prism-*.js")].sort
-  requires = language_files.map do |path|
-    name = File.basename(path, ".js")
+  available = Dir[LANGUAGES_DIR.join("prism-*.js")].map { |path| File.basename(path, ".js").delete_prefix("prism-") }
+  # prism-core must be required first; it defines the global Prism object that
+  # every language file extends. The remaining languages follow in dependency
+  # order so each one loads after the languages it builds on.
+  ordered = ["core"] + language_load_order.select { |key| available.include?(key) && key != "core" }
+  # Append any vendored language that is missing from components.json so no file
+  # is ever silently dropped from the bundle.
+  ordered += (available - ordered).sort
+  language_files = ordered.map { |key| "prism-#{key}" }
+  requires = language_files.map do |name|
     "//= require ./languages/#{name}"
   end
 
@@ -121,8 +163,17 @@ def write_import_file!(version)
 end
 
 def replace_between_markers!(content, start_marker, end_marker, replacement)
-  pattern = /(#{Regexp.escape(start_marker)}.*?\n\n).*?(\n\n#{Regexp.escape(end_marker)})/m
-  content.sub(pattern) { "#{$1}#{replacement}#{$2}" }
+  start_index = content.index(start_marker)
+  end_index = content.index(end_marker, start_index || 0)
+
+  abort "Could not find README section between #{start_marker.inspect} and #{end_marker.inspect}" unless start_index && end_index
+
+  prefix_end = content.index("\n", start_index + start_marker.length)
+  abort "Could not find README section line ending after #{start_marker.inspect}" unless prefix_end
+
+  before = content[0..prefix_end]
+  after = content[end_index - 1..]
+  "#{before}\n#{replacement}\n#{after}"
 end
 
 def update_readme!(version)
@@ -133,31 +184,38 @@ def update_readme!(version)
     "* #{File.basename(path, ".css").sub(/\Aprism-/, "")}"
   end.join("\n")
 
-  plugins = Dir[PLUGIN_JS_DIR.join("prism-*.js")].sort.map do |path|
-    plugin = File.basename(path, ".js").sub(/\Aprism-/, "")
+  plugin_names = Dir[PLUGIN_JS_DIR.join("prism-*.js")].map do |path|
+    File.basename(path, ".js").sub(/\Aprism-/, "")
+  end.sort
+
+  abort "No Prism plugin JavaScript files were copied" if plugin_names.empty?
+
+  plugins = plugin_names.map do |plugin|
     css = PLUGIN_CSS_DIR.join("prism-#{plugin}.css").file? ? ":white_check_mark:" : ":x:"
     "#{plugin} | #{css}"
   end
 
   plugin_table = ["Plugin | CSS", ":--- | :---", *plugins].join("\n")
   readme = replace_between_markers!(readme, "<div id=\"themes-list\"></div>", "### Plugins List", themes)
-  readme.sub!(/(<div id="plugins-list"><\/div>\n\n).*\z/m, "\\1#{plugin_table}\n")
+  readme = readme.sub(/(<div id="plugins-list"><\/div>\n\n).*\z/m) { "#{$1}#{plugin_table}\n" }
   README_FILE.write(readme)
 end
 
 def update_version_files!(version)
   VERSION_FILE.write(<<~RUBY)
-    module Prism
+    module PrismRails
       VERSION = "#{version}"
     end
   RUBY
 
   changelog = CHANGELOG_FILE.read
+  return if changelog.match?(/^## #{Regexp.escape(version)} \(/)
+
   entry = "\n## #{version} (#{Date.today.strftime('%Y-%m-%d')})\n* #{UPDATE_MESSAGE}\n"
   CHANGELOG_FILE.write(changelog.sub(/\A(.*?\n)/, "\\1#{entry}"))
 end
 
-clean_worktree!
+clean_worktree! unless options[:allow_dirty]
 
 prism_repo = clone_or_update!("prism")
 themes_repo = clone_or_update!("prism-themes")
@@ -170,9 +228,9 @@ version = tag.sub(/\Av/, "").sub(/-.*/, "")
 [LANGUAGES_DIR, PLUGIN_JS_DIR, PLUGIN_CSS_DIR, THEMES_DIR].each { |path| reset_directory!(path) }
 
 copy_matching(prism_repo.join("components"), LANGUAGES_DIR, "prism-*.js")
-copy_matching(prism_repo.join("plugins"), PLUGIN_JS_DIR, "prism-*.js")
+copy_matching(prism_repo.join("plugins"), PLUGIN_JS_DIR, "**/prism-*.js")
 FileUtils.cp(prism_repo.join("themes/prism.css"), VENDOR_CSS.join("prism.css"))
-copy_matching(prism_repo.join("plugins"), PLUGIN_CSS_DIR, "prism-*.css")
+copy_matching(prism_repo.join("plugins"), PLUGIN_CSS_DIR, "**/prism-*.css")
 copy_matching(prism_repo.join("themes"), THEMES_DIR, "prism-*.css")
 copy_matching(themes_repo.join("themes"), THEMES_DIR, "prism-*.css")
 

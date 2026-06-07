@@ -1,3 +1,3 @@
-module Prism
-  VERSION = "1.29.0"
+module PrismRails
+  VERSION = "1.30.0"
 end

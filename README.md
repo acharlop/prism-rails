@@ -1,4 +1,4 @@
-# prism-rails 1.29.0
+# prism-rails 1.30.0
 
 prism-rails wraps the [Prism.js](https://github.com/PrismJS/prism) library in a rails engine for simple use with the asset pipeline
 
@@ -50,25 +50,54 @@ Bug reports and pull requests are welcome on [GitHub](https://github.com/acharlo
 
 ## Maintaining
 
-Run the updater to sync vendored assets with the latest Prism.js tag:
+Use the updater to sync vendored assets with the latest Prism.js tag. The updater checks out the latest Prism and prism-themes tags, refreshes files under `vendor/assets`, updates `lib/prism-rails/version.rb`, rewrites the README theme/plugin lists, and adds a CHANGELOG entry.
+
+Recommended release flow:
 
 ```sh
+rbenv install 3.2.2 # if needed
+rbenv local 3.2.2
+gem install bundler -v 2.4.10
+rbenv rehash
+bundle install
 ruby scripts/update_prism.rb
+git diff
+bundle exec rake test
+cd demo
+bundle install
+bin/rails server
 ```
 
-Use `--commit` to create the update commit, or `--release` to commit, update the bundle, and run `rake release`. The legacy `./update-script.sh true` entry point still works.
+Open [http://localhost:3000](http://localhost:3000) and confirm the demo renders highlighted Ruby, JavaScript, and ERB snippets. Then commit and release:
+
+```sh
+git add .
+git commit -m "Update library to match latest Prism.js version"
+bundle update
+bundle exec rake release
+```
+
+You can pin a specific Prism.js tag when needed:
+
+```sh
+ruby scripts/update_prism.rb --tag v1.30.0
+```
+
+Automation shortcuts are also available: `ruby scripts/update_prism.rb --commit` creates the update commit, and `ruby scripts/update_prism.rb --release` commits, runs `bundle update`, and runs `bundle exec rake release`. Use those only when you do not need a manual review step. The legacy `./update-script.sh true` entry point still maps to the release shortcut.
 
 ## Demo App
 
-A Rails 8.1 demo lives in `demo/rails`:
+A Rails 8.1 demo lives in `demo`:
 
 ```sh
-cd demo/rails
+cd demo
 bundle install
 bin/rails server
 ```
 
 The demo requires Ruby 3.2 or newer. It loads this gem from the local checkout, serves Prism through the Rails asset pipeline, and renders highlighted Ruby, JavaScript, and ERB examples. After the server starts, open [http://localhost:3000](http://localhost:3000).
+
+If `bundle install` fails with `undefined method 'untaint'`, Ruby is running Bundler 1.x. Install Bundler 2.4.10 and run `rbenv rehash`, then retry `bundle install`.
 
 ### Contributors
 [@simmerz](https://github.com/simmerz)
@@ -82,12 +111,10 @@ The gem is available as open source under the terms of the [MIT License](http://
 
 * a11y-dark
 * atom-dark
-* autolinker
 * base16-ateliersulphurpool.light
 * cb
 * coldark-cold
 * coldark-dark
-* command-line
 * coy-without-shadows
 * coy
 * coy.min
@@ -108,9 +135,6 @@ The gem is available as open source under the terms of the [MIT License](http://
 * gruvbox-light
 * holi-theme
 * hopscotch
-* laserwave
-* line-highlight
-* line-numbers
 * lucario
 * material-dark
 * material-light
@@ -122,23 +146,17 @@ The gem is available as open source under the terms of the [MIT License](http://
 * one-dark
 * one-light
 * pojoaque
-* previewers
 * shades-of-purple
-* show-invisibles
-* show-language
 * solarized-dark-atom
 * solarizedlight
 * solarizedlight.min
 * synthwave84
 * tomorrow
 * tomorrow.min
-* toolbar
 * twilight
 * twilight.min
-* unescaped-markup
 * vs
 * vsc-dark-plus
-* wpd
 * xonokai
 * z-touch
 
@@ -158,7 +176,6 @@ download-button | :x:
 file-highlight | :x:
 filter-highlight-all | :x:
 highlight-keywords | :x:
-ie8 | :white_check_mark:
 inline-color | :white_check_mark:
 jsonp-highlight | :x:
 keep-markup | :x:
@@ -166,12 +183,6 @@ line-highlight | :white_check_mark:
 line-numbers | :white_check_mark:
 match-braces | :white_check_mark:
 normalize-whitespace | :x:
-previewer-angle | :white_check_mark:
-previewer-base | :white_check_mark:
-previewer-color | :white_check_mark:
-previewer-easing | :white_check_mark:
-previewer-gradient | :white_check_mark:
-previewer-time | :white_check_mark:
 previewers | :white_check_mark:
 remove-initial-line-feed | :x:
 show-invisibles | :white_check_mark:

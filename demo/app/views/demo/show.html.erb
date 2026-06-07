@@ -13,7 +13,7 @@
           <h2><%= example.fetch(:title) %></h2>
           <span class="language"><%= example.fetch(:language) %></span>
         </header>
-        <pre class="line-numbers"><code class="language-<%= example.fetch(:language) %>"><%= example.fetch(:code) %></code></pre>
+        <pre class="line-numbers language-<%= example.fetch(:language) %>"><code class="language-<%= example.fetch(:language) %>"><%= example.fetch(:code) %></code></pre>
       </article>
     <% end %>
   </section>

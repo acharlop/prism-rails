@@ -1,5 +1,12 @@
 # Prism-rails Changelog
 
+## 1.30.0 (2026-06-07)
+* Update bundled Prism.js assets to 1.30.0
+* Update the asset updater to copy nested Prism plugin files, generate language requires in dependency order, and fail loudly when README sections cannot be rewritten
+* Move the gem version constant from `Prism::VERSION` to `PrismRails::VERSION` to avoid colliding with Ruby's `prism` parser gem
+* Add and document a Rails 8.1 demo app
+* Update release documentation and local development setup for Ruby 3.2.2 and Bundler 2.4.10
+
 For Prism.js changes see [Prism.js changelog](https://github.com/PrismJS/prism/blob/gh-pages/CHANGELOG.md)
 
 ## 1.29.0 (2024-03-02)

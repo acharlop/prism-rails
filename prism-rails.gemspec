@@ -4,7 +4,7 @@ require 'prism-rails/version'
 
 Gem::Specification.new do |s|
   s.name          = "prism-rails"
-  s.version       = Prism::VERSION
+  s.version       = PrismRails::VERSION
   s.authors       = ["Avi Charlop"]
   s.email         = "avicharlop@gmail.com"
   s.summary       = 'prism-rails wraps the Prism.js library in a rails engine for simple use with the asset pipeline'
